@@ -1,0 +1,1300 @@
+sudoku_js.html
+Who has access
+Not shared
+System properties
+Type
+HTML
+Size
+42 KB
+Storage used
+42 KB
+Location
+My Drive
+Owner
+me
+Modified
+Sep 22, 2014 by me
+Opened
+5:04 PM by me
+Created
+12:56 PM with Google Drive Web
+Add a description
+Viewers can download
+<html>
+	<head>
+		<title>Sudoku</title>
+		<style type="text/css">
+			div#grid table, div#grid table caption {
+				background-color: #CC9999;
+				text-align: center;
+			}
+			div#grid table caption {
+				padding: 3px 0px 2px 0px;
+			}
+			div#grid table caption a {
+				text-decoration: none;
+				color: #3333CC;
+			}
+			div#grid table caption a:hover {
+				text-decoration: underline;
+			}
+			div#grid table caption,
+			div#grid table caption select,
+			div#grid table td.d {
+				font-family: "Courier New", fixed;
+				font-size: 12px;
+			}
+			div#grid table td.d input {
+				font-family: Tahoma, Arial, sans-serif;
+				font-size: 25px;
+			}
+			div#grid table td {
+				width: 5px;
+				height: 5px;
+				padding: 0px;
+			}
+			div#grid table {
+				border: 5px solid #000000;
+			}
+			div#grid table td.hover {
+				background-color: #0000FF;
+			}
+			div#grid table td.clicked {
+				background-color: #000000;
+			}
+			div#grid table td.d {
+				height: 40px;
+				background-color: #FFFFFF;
+			}
+			div#grid table caption select,
+			div#grid table td.d,
+			div#grid table td.d input {
+				border: 0px;
+			}
+			div#grid table td.d, div#grid table td.d input {
+				width: 40px;
+				text-align: center;
+				vertical-align: middle;
+			}
+		</style>
+		<script type="text/javascript">
+			var g0 = "0000000000000000000000000000000000000000" +
+				"00000000000000000000000000000000000000000";
+			// borrowed these grids from http://www.scanraid.com/sudoku.js
+			var g1 = "9703040650205060800000000000058029000020" +
+				"40300008705100000000000060208030840109027"; // Easiest
+			var g2 = "0985002001000000040500000300026431000009" +
+				"08000007152600070000080200000007006001520"; // Gentle
+			var g3 = "3020705040000000000062540000900006000089" +
+				"65100005000020000197800000000000507080206"; // Moderate
+			var g4 = "0054016000000600000940070203700200400000" +
+				"10000010040056050800260000090000002306900"; // Tough
+			var g5 = "0010038000400000607009065016005000020000" +
+				"00000800007009306108004090000080008700200"; // Diabolical
+			var g6 = "....41....6....2...........32.6........." +
+				"5..417...........2..3...48......5.1......"; // Easy 17 Clue
+			var g7 = "..2.9.3..8.5......1.........9..6..4....." +
+				"...58........1.7....2..3..5........1....."; // Hard 17 Clue
+			var g8 = ".8...4.6...2.....976.....12...8.6...8..." +
+				"....3...1.7...67...5.411.....7...5.9...2."; // Naked Triples
+			var g9 = ".........82.6.1.741..3.4..651.....63...." +
+				"5....94.....252..8.9..163.1.2.59........."; // Hidden Triple
+			var g10= ".5.8.7.3...29.65......5.....45....7..79." +
+				"2.46..2....35.....9......15.47...9.1.3.8."; // Pointing Pairs
+			var g11= "...9.4...79.....248..2....1.8.451.3....." + // Line/Box
+				"......7.369.4.2....7..341.....62...5.6...";      // Reduction
+			var g12= "0439802506004250002000010949000040703006" +
+				"08000410209003820500000000040005534890710"; // x-wing example
+			var g13= "0063970003001280009805640377952314682436" + // Simple
+				"89571168475392030716020000053000600042703";      // Colouring
+																  // T1
+			var g14= "0560709200702090659205360806097050320300" + // Simple
+				"90050500003091060357019095408070703900540";      // Colouring
+																  // T2
+			var g15= "0510709009281563470039805002974650035360" +
+				"10479814739625009520736062097054005640290"; // y-wing example
+			var g16= "0600000535000306010036052000025091009001" +
+				"70802017328500001407320700090415040000060"; // SwordFish
+			var g17= "0870309649640781000004968700409070566903" +
+				"50748070604019400803697809765400706049580"; // Jelly-Fish
+			var g18= ".6.8.9.1.42..1..8.1.......23.7...2.....4" +
+				".5.....4...5.62.......9.8..7..21.4.2.3.6."; // Multi-Colouring
+			var g19= "1.....7.9.9...5.....5.3.4.6...5..26..2.." + // Grouped
+				"...4..67..1...9.4.1.5.....7...1.7.2.....3";      // AIC Example
+			var g20= "9..1....4..4.3.8...53....9....7.8..1.1.." +
+				"...3.8..6.3....2.....7...9.4.5..5....6..3"; // Bowman's Example
+			var g21= "0800004955018493029243508010305016000150" + // Remote
+				"00700009400510096724150142605907750000246";      // Pairs Test
+																  // 2
+			var g22= "4300200960079061040004050000400000120000" +
+				"00000960000040000107000508304700170090063"; // Triple Example
+			var g23= "0703020800030001005004010031000000050302" +
+				"05010200000009600509007009000500050704020"; // Box/Line example
+			var g24= "0301020850000300005000600370582003610100" +
+				"80040092010578100050704000071050075924010"; // Unique Rectangle
+			var google = "8700000000000390000000000890024000000000" +
+				"00570140000000005900000000000710650000000"; // Google Puzzle
+			var alEscargot = "8500024007200000090040000000001070023050" +
+				"00900040000000000080070017000000000036040"; // Al Escargot
+
+			var DEFSZ = 4;
+			function createTextBox() {
+				var input = document.createElement('input');
+				input.setAttribute('type', 'text');
+				input.setAttribute('maxlength', '1');
+				return input;
+			}
+			function draw(exname) {
+				var grid = document.getElementById('grid');
+				var table = document.createElement('table');
+				var size = document.getElementById('size');
+				var g = document.URL.indexOf('grid=');
+				var r, row, cell, input, gs, gs2, sgs, sgs2, size, qgrid = '';
+
+				if (exname) {
+					g = 0;
+					qgrid = eval(exname);
+					gs = Math.sqrt(qgrid.length);
+				} else if (size) {
+					gs = parseInt(size.value);
+				} else {
+					gs = DEFSZ;
+					if (g != -1) {
+						var s;
+						qgrid = document.URL.substring(g + 5);
+						s = Math.floor(Math.sqrt(qgrid.length));
+						if (s * s == qgrid.length) gs = s;
+					}
+				}
+				
+				gs2 = gs * gs;
+
+				if (grid.hasChildNodes()) grid.removeChild(grid.firstChild);
+
+				grid.appendChild(table);
+
+				table.cellSpacing = '0';
+
+				cell = table.createCaption();
+				sgs = Math.floor(Math.sqrt(gs));
+				sgs2 = sgs * sgs;
+				if (sgs2 == gs) {
+					row = document.createElement('a');
+					row.setAttribute('href','javascript:gridLines('+sgs+')');
+					row.appendChild(document.createTextNode('Grid'));
+					cell.appendChild(row);
+					cell.appendChild(document.createTextNode(' size: '));
+				} else {
+					cell.appendChild(document.createTextNode('Grid size: '));
+				}
+				size = document.createElement('select');
+				size.id = 'size';
+				size.setAttribute('onchange','draw()');
+				for (r = DEFSZ; r < 10; r++) {
+					row = document.createElement('option'); 
+					row.value = r;
+					row.appendChild(document.createTextNode(r));
+					if (r == gs) row.setAttribute('selected','selected');
+					size.appendChild(row);
+				}
+				cell.appendChild(size);
+
+				for (r = 0; r < gs; r++) {
+					row = table.insertRow(-1);
+					for (c = 0; c < gs; c++) {
+						cell = row.insertCell(-1);
+						cell.className = 'd';
+						cell.valign = 'middle';
+						input = createTextBox();
+						if (g != -1 && qgrid.length == gs2) {
+							var val = parseInt(qgrid.substr((r * gs) + c, 1));
+							if (!isNaN(val) && val != 0) {
+								input.setAttribute('value', val);
+								input.style.fontWeight = 'bold';
+							}
+						}
+						cell.appendChild(input);
+						if (c+1 < gs) {
+							cell = row.insertCell(-1);
+							setCellHandlers(cell);
+						}
+					}
+					if (r+1 < gs) {
+						row = table.insertRow(-1);
+						for (c = 0; c < gs; c++) {
+							cell = row.insertCell(-1);
+							setCellHandlers(cell);
+							if (c+1 < gs) cell = row.insertCell(-1);
+						}
+					}
+				}
+				table = grid.innerHTML;
+				grid.innerHTML = table;
+				if (g != -1 && qgrid.length == gs2 && sgs2 == gs)
+					if (exname == 'google')
+						googleLines();
+					else
+						gridLines(sgs);
+			}
+			function exportPuzzle() {
+				var matrix = buildMatrix();
+				var r, c;
+				var p = '';
+				if (getGroups(matrix).length > 0) {
+					checkPossibles(matrix);
+					for (r = 0; r < matrix.length; r++)
+						for (c = 0; c < matrix[r].length; c++)
+							p += matrix[r][c].getValue();
+					o(p);
+				}
+			}
+			function isClicked(cn) {
+				return cn == 'clicked';	
+			}
+			function setCellHandlers(cell) {
+				cell.setAttribute('onmouseover',
+						"if(!isClicked(this.className))this.className='hover'; "
+						+ "this.style.cursor = 'pointer'");
+				cell.setAttribute('onmouseout',
+						"if(!isClicked(this.className))this.className=''; " +
+						"this.style.cursor = 'default'");
+				cell.setAttribute('onclick',
+						"if(isClicked(this.className))this.className=''; " +
+						"else this.className='clicked'; gridLinesCheck()");
+			}
+			/* http://www-db.stanford.edu/~manku/bitcount/bitcount.html */
+			function bitCount(n) {
+				var c = 0;
+				while (n) { c++; n &= (n - 1); }
+				return c;
+			}
+			function setBits(n) {
+				var c = 0;
+				var a = new Array();
+				while (n) { ++c; if (n & 1) a.push(c); n >>>= 1; }
+				return a;
+			}
+			function Cell(table, row, col) {
+				this.table = table;
+				this.row = row;
+				this.col = col;
+				this.td = table.rows[row].cells[col];
+				this.input = this.td.firstChild;
+				if (this.td.childNodes.length == 1)
+					this.input = this.td.firstChild;
+				else this.input = createTextBox();
+				this.group = -1;
+				this.possibles = 0;
+				this.maxPossibles = 0;
+				this.setError = function() {
+					this.td.style.backgroundColor = '#FF0000';
+					this.input.style.backgroundColor = '#FF0000';
+				}
+				this.setPossibles = function(pm) {
+					this.maxPossibles = pm;
+					if (this.input.value == '')
+						this.possibles = (1 << pm) - 1;
+					else
+						this.possibles = 1 << (parseInt(this.input.value) - 1);
+				}
+				this.equals = function(that) {
+					return this.row == that.row && this.col == that.col;
+				}
+				this.setGroup = function(group) {
+					var st = this.td.style;
+					var si = this.input.style;
+					this.group = group;
+					this.td.title = 'Group ' + group;
+					if (this.group == 0)
+						si.backgroundColor = st.backgroundColor = '#D0D0FF';
+					else if (this.group == 1)
+						si.backgroundColor = st.backgroundColor = '#FFD0A2';
+					else if (this.group == 2)
+						si.backgroundColor = st.backgroundColor = '#D0FFE7'
+					else if (this.group == 3)
+						si.backgroundColor = st.backgroundColor = '#A2FFA2';
+					else if (this.group == 4)
+						si.backgroundColor = st.backgroundColor = '#A2FFFF';
+					else if (this.group == 5)
+						si.backgroundColor = st.backgroundColor = '#FFFFA2';
+					else if (this.group == 6)
+						si.backgroundColor = st.backgroundColor = '#E7D0FF';
+					else if (this.group == 7)
+						si.backgroundColor = st.backgroundColor = '#FFA2A2';
+					else if (this.group == 8)
+						si.backgroundColor = st.backgroundColor = '#FFD0E7';
+				}
+				// if a cell has more than one possible,
+				// it doesn't have a value
+				this.getValue = function() {
+					var val = 0, n = this.possibles;
+					if (n) {
+						while (!(n & 1)) { ++val; n >>>= 1; }
+						if (n >>> 1) val = 0; else ++val;
+					}
+					return val;
+				}
+				this.checkPossibles = function() {
+					var c = 1;
+					if (this.input.value == '') {
+						var pary = setBits(this.possibles);
+						c = pary.length;
+						this.td.innerHTML = '';
+						if (c == 1) {
+							this.td.appendChild(this.input);
+							this.input.value = pary[0];
+						} else {
+							var p = '';
+							if (c == 0) alert('no possibles => ' + this);
+							for (c = 0; c < this.maxPossibles; c++) {
+								if ((1<<c) & this.possibles) {
+									p += (c+1);
+								} else {
+									p += '&nbsp;';
+								}
+								if ((c + 1) % 3 == 0) 
+									p += '<br />';
+								else
+									p += '&nbsp;';
+							}
+							this.td.innerHTML = p;
+							c = pary.length;
+						}
+					}
+					if (c == 1) this.input.style.fontWeight = 'bold';
+					return c;
+				}
+				this.removePossibles = function(p) {
+					this.possibles &= ~ p;
+				}
+				this.solvePossibles = function(p) {
+					var val = p.getValue();
+					if (val) this.removePossibles(p.possibles);
+				}
+				this.solveSingles = function(p) {
+					var t = (p ^ this.possibles) & this.possibles;
+					if (t > 0) this.possibles = t;
+				}
+				this.hasSolution = function() {
+					return bitCount(this.possibles) == 1;
+				}
+				this.hasGroup = function() {
+					return this.group != -1;
+				}
+				this.rBorderClicked = function() {
+					var cells = this.table.rows[this.row].cells;
+					if (this.col + 1 < cells.length)
+						return isClicked(cells[this.col + 1].className);
+					return true;
+				}
+				this.lBorderClicked = function() {
+					var cells = this.table.rows[this.row].cells;
+					if (this.col - 1 > 0)
+						return isClicked(cells[this.col - 1].className);
+					return true;
+				}
+				this.tBorderClicked = function() {
+					var rows = this.table.rows;
+					if (this.row - 1 > 0)
+						return isClicked
+							(rows[this.row - 1].cells[this.col].className);
+					return true;
+				}
+				this.bBorderClicked = function() {
+					var rows = this.table.rows;
+					if (this.row + 1 < rows.length)
+						return isClicked
+							(rows[this.row + 1].cells[this.col].className);
+					return true;
+				}
+				this.rBorderClick = function() {
+					var cells = this.table.rows[this.row].cells;
+					if (this.col + 1 < cells.length)
+						cells[this.col + 1].className = 'clicked';
+				}
+				this.bBorderClick = function() {
+					var rows = this.table.rows;
+					if (this.row + 1 < rows.length)
+						rows[this.row + 1].cells[this.col].className =
+							'clicked';
+				}
+				this.toString = function() {
+					return '[R'+this.row+'C'+this.col+',Group='+this.group+
+						',value="'+this.input.value+'"]';
+				}
+			}
+			Cell.cmp = function(c1, c2) {
+				return c1.possibles - c2.possibles;
+			}
+			function buildMatrix() {
+				var table = document.getElementById('grid').firstChild;
+				var r, row, c, cell;
+				var matrix = new Array();
+				for (r = 0; r < table.rows.length; r++) {
+					row = table.rows[r];
+					if (r % 2 == 0) matrix[r-Math.floor(r/2)] = new Array();
+					for (c = 0; c < row.cells.length; c++) {
+						cell = row.cells[c];
+						if (cell.className == 'd') {
+							matrix[r-Math.floor(r/2)][c-Math.floor(c/2)] =
+								new Cell(table, r, c);
+						}
+					}
+				}
+				for (r = 0; r < matrix.length; r++)
+					for (c = 0; c < matrix[r].length; c++)
+						matrix[r][c].setPossibles(matrix.length);
+				return matrix;
+			}
+			function gridLines(where) {
+				var matrix = buildMatrix();
+				var r, c;
+				for (r = 0; r < matrix.length; r++) {
+					for (c = 0; c < matrix[r].length; c++) {
+						if ((r + 1) % where == 0) matrix[r][c].bBorderClick();
+						if ((c + 1) % where == 0) matrix[r][c].rBorderClick();
+					}
+				}
+				gridLinesCheck();
+				getGroups(matrix);
+			}
+			function googleLines() {
+				var matrix = buildMatrix();
+				var r, c;
+				if (matrix.length == 9) {
+					for (r = 2, c = 0; c < matrix[r].length; c++) {
+						matrix[r][c].bBorderClick();
+						if (c == 1) {
+							matrix[r+1][c].rBorderClick();
+							matrix[r][c].rBorderClick();
+						}
+						if (c > 1 && c < 5) matrix[r+1][c].bBorderClick();
+					}
+					for (r = 6, c = 0; c < matrix[r].length; c++) {
+						if (c == 0)
+							matrix[r][c].rBorderClick();
+						else if (c == 4 || c == 5) {
+							matrix[r+1][c].rBorderClick();
+							matrix[r+1][c].bBorderClick();
+						}
+						if (c != 7) matrix[r][c].bBorderClick();
+					}
+					for (r = 0, c = 5; r < matrix.length; r++) {
+						if (r < 5) matrix[r][c].rBorderClick();
+						if (r > 3) {
+							if (r < matrix.length - 1) {
+								matrix[r][c-1].rBorderClick();
+								if (r == 4) matrix[r][c+1].bBorderClick();
+								if (r == 5) {
+									matrix[r][c+1].rBorderClick();
+									matrix[r][c+2].bBorderClick();
+								}
+								if (r == 6) {
+									matrix[r][c+1].rBorderClick();
+									matrix[r][c+2].rBorderClick();
+								}
+							} else matrix[r][c-2].rBorderClick();
+						}
+					}
+					matrix[0][3].rBorderClick();
+					matrix[0][3].bBorderClick();
+					matrix[1][2].rBorderClick();
+					matrix[1][2].bBorderClick();
+					matrix[4][2].rBorderClick();
+					matrix[5][2].rBorderClick();
+					matrix[5][2].bBorderClick();
+					matrix[5][1].bBorderClick();
+					gridLinesCheck();
+					getGroups(matrix);
+				}
+			}
+			function gridLinesCheck() {
+				var table = document.getElementById('grid').firstChild;
+				var r, row, prow, nrow, c, cell, pcell, ncell;
+				for (r = 1; r < table.rows.length - 1; r++) {
+					row = table.rows[r];
+					for (c = 1; c < row.cells.length - 1; c++) {
+						cell = row.cells[c];
+						prow = table.rows[r - 1].cells[c].className;
+						nrow = table.rows[r + 1].cells[c].className;
+						pcell = row.cells[c - 1].className;
+						ncell = row.cells[c + 1].className;
+						if (cell.className != 'd' && prow != 'd'
+							&& nrow != 'd' && pcell != 'd' && ncell != 'd') {
+							if (isClicked(prow) + isClicked(nrow)
+								+ isClicked(pcell) + isClicked(ncell) > 1)
+								cell.className = 'clicked'
+							else cell.className = '';
+						}
+					}
+				}
+			}
+			function getGroups(matrix) {
+				var table = document.getElementById('grid').firstChild;
+				var groups = new Array();
+				var SCMAX = matrix.length + Math.ceil(matrix.length/2);
+				var group, pr, r, pc, c, cell, sc, searching, error;
+				for (group = 0, error = false;
+						group < matrix.length && !error; group++) {
+					groups[group] = new Array();
+					for (r = 0; r < matrix.length; r++) {
+						for (c = 0; c < matrix[r].length; c++)
+							if (!matrix[r][c].hasGroup()) break;
+						if (c < matrix[r].length) break;
+					}
+					pr = r,  pc = c;
+					for (sc = 0; sc < SCMAX && !error; sc++) {
+						cell = matrix[r][c];
+						if (!cell.rBorderClicked()
+							&& !matrix[r][c + 1].hasGroup()) {
+							pc = c++, pr = r;
+						} else if (!cell.bBorderClicked()
+								   && !matrix[r + 1][c].hasGroup()) {
+							pr = r++, pc = c;
+						} else if (!cell.lBorderClicked()
+								   && !matrix[r][c - 1].hasGroup()) {
+							pc = c--, pr = r;
+						} else if (!cell.tBorderClicked()
+								   && !matrix[r - 1][c].hasGroup()) {
+							pr = r--, pc = c;
+						} else { // adjacent cells already have groups
+							if (!cell.tBorderClicked()
+								&& (cell.bBorderClicked() || r < pr)) {
+								pr = r--, pc = c;
+							} else if (!cell.lBorderClicked()
+								&& (cell.rBorderClicked() || c < pc)) {
+								pc = c--, pr = r;
+							} else if (!cell.bBorderClicked()
+								&& (cell.tBorderClicked() || r > pr)) {
+								pr = r++, pc = c;
+							} else if (!cell.rBorderClicked()
+								&& (cell.lBorderClicked() || c > pc)) {
+								pc = c++, pr = r;
+							} else {
+								alert("Unexpected grouping error: " +
+									"don't know where to go");
+								error = true;
+							}
+						}
+						if (!cell.hasGroup()) {
+							cell.setGroup(group);
+							groups[group].push(cell);
+							if (groups[group].length > matrix.length) {
+								alert("Unexpected grouping error: group " +
+									group + " length greater than " +
+									"matrix length");
+								error = true;
+							}
+						}
+					}
+				}
+
+				for (r = 0; r < matrix.length; r++) {
+					for (c = 0; c < matrix[r].length; c++)
+						if (!matrix[r][c].hasGroup()) break;
+					if (c < matrix[r].length) break;
+				}
+
+				// special case where a box is left and a group is missing one
+				if (r < matrix.length || c < matrix.length) {
+					for (group = 0; group < groups.length; group++) {
+						if (groups[group].length < matrix.length) {
+							matrix[r][c].setGroup(group);
+							break;
+						}
+					}
+				}
+
+				for (r = 0; r < matrix.length; r++) {
+					for (c = 0; c < matrix[r].length; c++)
+						if (!matrix[r][c].hasGroup()) break;
+					if (c < matrix[r].length) break;
+				}
+
+				if (error || r < matrix.length || c < matrix.length) {
+					alert('An error occurred trying to group the cells\n' +
+						'error = ' + error + ', r = ' + r + ', c = ' + c);
+					groups.length = 0;
+				}
+				return groups;
+			}
+			function o(t) {
+				var o = document.getElementById('out');
+				o.appendChild(document.createTextNode(t));
+				o.appendChild(document.createElement('br'));
+			}
+			function clearo() {
+				var o = document.getElementById('out');
+				while (o.hasChildNodes()) o.removeChild(o.firstChild);
+			}
+			function solve() {
+				var matrix = buildMatrix();
+				var m2 = matrix.length * matrix.length;
+				var groups = getGroups(matrix);
+				var p = checkPossibles(matrix);
+				var np = 0;
+				clearo();
+				//var s1, s2, st = 0;
+				while (matrix.length > 0 && p > m2) {
+					o('p = ' + p);
+
+					//s1 = new Date().getTime();
+					solvePossibles(matrix);
+					//st += new Date().getTime() - s1;
+					np = checkPossibles(matrix);
+					o('     solvePossibles         :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solveSingles(matrix, groups);
+					np = checkPossibles(matrix);
+					o('     solveSingles           :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solvePairsTriplesQuads(matrix, groups, solveNakedPairs);
+					np = checkPossibles(matrix);
+					o('     solveNakedPairs        :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solvePairsTriplesQuads(matrix, groups,
+						solveNakedTriplesQuads);
+					np = checkPossibles(matrix);
+					o('     solveNakedTriplesQuads :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solvePairsTriplesQuads(matrix, groups, solveHiddenPairs);
+					np = checkPossibles(matrix);
+					o('     solveHiddenPairs       :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solvePairsTriplesQuads(matrix, groups, solveHiddenTriples);
+					np = checkPossibles(matrix);
+					o('     solveHiddenTriples     :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solvePointing(matrix, groups);
+					np = checkPossibles(matrix);
+					o('     solvePointing          :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solveBoxLineReduction(matrix, groups);
+					np = checkPossibles(matrix);
+					o('     solveBoxLineReduction  :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solveXWing(matrix, groups);
+					np = checkPossibles(matrix);
+					o('     solveXWing             :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					solvePairsTriplesQuads(matrix, groups, solveHiddenQuads);
+					np = checkPossibles(matrix);
+					o('     solveHiddenQuads       :: np = ' + np);
+					if (np < p) { p = np; continue; }
+
+					o('cannot solve any more');
+					break;
+				}
+				o('done (' + checkErrors(matrix, groups) + ' errors)');
+				//o('total time spent in solvePossibles: ' + st);
+			}
+			function checkPossibles(matrix) {
+				var r, c, p;
+				for (r = 0, p = 0; r < matrix.length; r++)
+					for (c = 0; c < matrix[r].length; c++)
+						p += matrix[r][c].checkPossibles();
+				return p;
+			}
+			function checkErrors(matrix, groups) {
+				var r, rr, c, cc, g, gg, ggg, c1, c2, v1, v2, e = 0;
+				for (r = 0, p = 0; r < matrix.length; r++)
+					for (c = 0; c < matrix[r].length; c++) {
+						c1 = matrix[r][c];
+						v1 = c1.getValue();
+						if (v1) {
+							for (cc = c + 1; cc < matrix[r].length; cc++) {
+								c2 = matrix[r][cc];
+								v2 = c2.getValue();
+								if (v1 == v2) {
+									c1.setError();
+									c2.setError();
+									e++;
+								}
+							}
+							for (rr = r + 1; rr < matrix.length; rr++) {
+								c2 = matrix[rr][c];
+								v2 = c2.getValue();
+								if (v1 == v2) {
+									c1.setError();
+									c2.setError();
+									e++;
+								}
+							}
+						}
+					}
+				for (g = 0; g < groups.length; g++)
+					for (gg = 0; gg < groups[g].length; gg++) {
+						c1 = groups[g][gg];
+						v1 = c1.getValue();
+						if (v1) {
+							for (ggg = gg + 1; ggg < groups[g].length; ggg++) {
+								c2 = groups[g][ggg];
+								v2 = c2.getValue();
+								if (v1 == v2) {
+									c1.setError();
+									c2.setError();
+									e++;
+								}
+							}
+						}
+					}
+				return e;
+			}
+			function solvePossiblesSlower(matrix, groups) {
+				var r, rr, c, cc, g, cell, gary, bc;
+				for (r = 0; r < matrix.length; r++) {
+					for (c = 0; c < matrix[r].length; c++) {
+						cell = matrix[r][c];
+						if (cell.hasSolution()) continue;
+						// solve for the column
+						for (rr = 0; rr < matrix.length; rr++)
+							if (rr != r) cell.solvePossibles(matrix[rr][c]);
+						if (cell.hasSolution()) continue;
+						// solve for the row
+						for (cc = 0; cc < matrix[r].length; cc++)
+							if (cc != c) cell.solvePossibles(matrix[r][cc]);
+						if (cell.hasSolution()) continue;
+						// solve for the group
+						gary = groups[cell.group];
+						for (g = 0; g < gary.length; g++)
+							if (!cell.equals(gary[g]))
+								cell.solvePossibles(gary[g]);
+					}
+				}
+			}
+			function solvePossibles(matrix) {
+				var r, c, cell;
+				var rp = new Array(matrix.length);
+				var cp = new Array(matrix.length);
+				var gp = new Array(matrix.length);
+				for (r = 0; r < matrix.length; r++) {
+					rp[r] = 0;
+					for (c = 0; c < matrix[r].length; c++) {
+						if (r == 0) cp[c] = 0;
+						cell = matrix[r][c];
+						if (cell.hasSolution()) {
+							rp[r] |= cell.possibles;
+							cp[c] |= cell.possibles;
+							gp[cell.group] |= cell.possibles;
+						}
+					}
+				}
+				for (r = 0; r < matrix.length; r++) {
+					for (c = 0; c < matrix[r].length; c++) {
+						cell = matrix[r][c];
+						if (!cell.hasSolution()) {
+							cell.removePossibles(rp[r]);
+							cell.removePossibles(cp[c]);
+							cell.removePossibles(gp[cell.group]);
+						}
+					}
+				}
+			}
+			function solveSingles(matrix, groups) {
+				var r, rr, c, cc, g, cell, gary, p;
+				for (r = 0; r < matrix.length; r++) {
+					for (c = 0; c < matrix[r].length; c++) {
+						cell = matrix[r][c];
+						if (cell.hasSolution()) continue;
+						// solve for the column
+						for (p = 0, rr = 0; rr < matrix.length; rr++)
+							if (rr != r) p |= matrix[rr][c].possibles;
+						cell.solveSingles(p);
+						if (cell.hasSolution()) continue;
+						// solve for the row
+						for (p = 0, cc = 0; cc < matrix[r].length; cc++)
+							if (cc != c) p |= matrix[r][cc].possibles;
+						cell.solveSingles(p);
+						if (cell.hasSolution()) continue;
+						// solve for the group
+						gary = groups[cell.group];
+						for (p = 0, g = 0; g < gary.length; g++)
+							if (!cell.equals(gary[g])) p |= gary[g].possibles;
+						cell.solveSingles(p);
+					}
+				}
+			}
+			function solvePairsTriplesQuads(matrix, groups, func) {
+				var r, c, cc, g, gg, p, pary, m;
+				pary = new Array();
+				// solve for the row
+				for (r = 0; r < matrix.length; r++) {
+					pary.length = 0;
+					for (c = 0; c < matrix[r].length; c++)
+						if (!matrix[r][c].hasSolution())
+							pary.push(matrix[r][c]);
+					func(pary, matrix.length);
+				}
+				// solve for the column
+				for (c = 0; c < matrix[0].length; c++) {
+					pary.length = 0;
+					for (r = 0; r < matrix.length; r++)
+						if (!matrix[r][c].hasSolution())
+							pary.push(matrix[r][c]);
+					func(pary, matrix.length);
+				}
+				// solve for the group
+				for (g = 0; g < groups.length; g++) {
+					pary.length = 0;
+					for (gg = 0; gg < groups[g].length; gg++)
+						if (!groups[g][gg].hasSolution())
+							pary.push(groups[g][gg]);
+					func(pary, matrix.length);
+				}
+			}
+			function solveNakedPairs(pary, size) {
+				var p, cc;
+				if (pary.length <= 2) return;
+				pary.sort(Cell.cmp);
+				for (p = 0; p < pary.length - 1; p++)
+					if (bitCount(pary[p].possibles) == 2
+						&& pary[p].possibles == pary[p+1].possibles)
+						for (cc = 0; cc < pary.length; cc++)
+							if (cc != p && cc != p+1)
+								pary[cc].removePossibles(pary[p].possibles);
+			}
+			function solveHiddenPairs(pary, size) {
+				var m0, m1, m, n, p;
+				var nary = new Array();
+				if (pary.length <= 2) return;
+				for (m0 = 0; m0 < size - 1; m0++)
+					for (m1 = m0 + 1; m1 < size; m1++) {
+						m = (1 << m0) | (1 << m1);
+						n = 0;
+						for (p = 0; p < pary.length; p++)
+							if (m & pary[p].possibles == m) n++;
+						if (n == 2)
+							for (p = 0; p < pary.length; p++)
+								if (m & pary[p].possibles == m)
+									pary[p].possibles &= m;
+					}
+			}
+			function solveNakedTriplesQuads(pary, size) {
+				var p0, p1, p2, p3, m, bc, npary, cc;
+				if (pary.length <= 3) return;
+				for (p0 = 0; p0 < pary.length; p0++) {
+					m = pary[p0].possibles;
+					if (bitCount(m) <= 4) {
+						for (p1 = p0 + 1; p1 < pary.length; p1++) {
+							m = pary[p0].possibles | pary[p1].possibles;
+							if (bitCount(m) <= 4) {
+								for (p2 = p1 + 1; p2 < pary.length; p2++) {
+									m = pary[p0].possibles | pary[p1].possibles
+										| pary[p2].possibles;
+									bc = bitCount(m);
+									if (bc <= 4) {
+										// set the 4th to
+										// something off the grid
+										p3 = pary.length;
+										// if it's not a triple, and we have
+										// enough candidates, look for a quad
+										if (bc != 3 && pary.length > 4)
+											for (p3=p2+1;p3<pary.length;p3++) {
+												m = pary[p0].possibles
+													| pary[p1].possibles
+													| pary[p2].possibles
+													| pary[p3].possibles;
+												if (bitCount(m) == 4) break;
+											}
+
+										if (bc == 3 || p3 < pary.length) {
+											npary = new Array();
+											for (cc = 0; cc < pary.length; cc++)
+												if (cc!=p0&&cc!=p1
+													&&cc!=p2&&cc!=p3) {
+													pary[cc].removePossibles(m);
+													npary.push(pary[cc]);
+												}
+											if (npary > 3) {
+												//pary = npary;
+												p0 = 0, p1 = 1, p2 = 2;
+											} else return;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			function solveHiddenTriples(pary, size) {
+				var m0, m1, m2, m, p;
+				var nary = new Array();
+				if (pary.length <= 3) return;
+				for (m0 = 0; m0 < size - 2; m0++)
+					for (m1 = m0 + 1; m1 < size - 1; m1++)
+						for (m2 = m1 + 1; m2 < size; m2++) {
+							m = (1 << m0) | (1 << m1) | (1 << m2);
+							nary.length = 0;
+							for (p = 0; p < pary.length; p++)
+								if (bitCount(m & pary[p].possibles) > 0)
+									nary.push(pary[p]);
+							if (nary.length == 3) {
+								if (bitCount(m & (nary[0].possibles
+										| nary[1].possibles
+										| nary[2].possibles)) == 3) {
+									nary[0].possibles &= m;
+									nary[1].possibles &= m;
+									nary[2].possibles &= m;
+								}
+							}
+						}
+			}
+			function solveHiddenQuads(pary, size) {
+				var m0, m1, m2, m3, m, p;
+				var nary = new Array();
+				if (pary.length <= 4) return;
+				for (m0 = 0; m0 < size - 3; m0++)
+					for (m1 = m0 + 1; m1 < size - 2; m1++)
+						for (m2 = m1 + 1; m2 < size - 1; m2++)
+							for (m3 = m2 + 1; m3 < size; m3++) {
+								m = (1<<m0) | (1<<m1) | (1<<m2) | (1<<m3);
+								nary.length = 0;
+								for (p = 0; p < pary.length; p++)
+									if (bitCount(m & pary[p].possibles) > 0)
+										nary.push(pary[p]);
+								if (nary.length == 4) {
+									if (bitCount(m & (nary[0].possibles
+											| nary[1].possibles
+											| nary[2].possibles
+											| nary[3].possibles)) == 4) {
+										nary[0].possibles &= m;
+										nary[1].possibles &= m;
+										nary[2].possibles &= m;
+										nary[3].possibles &= m;
+									}
+								}
+							}
+			}
+			// if a certain number appears in a group only on one
+			// row/column, then it must exist in that group on that
+			// row/column and can be eliminated from the rest of the
+			// row/column
+			function solvePointing(matrix, groups) {
+				var r, c, n, p0, pn, g, gg, p1;
+				var pary = new Array();
+				// solve for the row
+				for (r = 0; r < matrix.length; r++) {
+					pary.length = 0;
+					for (c = 0; c < matrix[r].length; c++)
+						if (!matrix[r][c].hasSolution())
+							pary.push(matrix[r][c]);
+					if (pary.length > 2)
+						for (n = 0; n < matrix.length; n++) {
+							pn = (1 << n);
+							for (p0 = 0; p0 < pary.length; p0++)
+								if (pn & pary[p0].possibles) {
+									g = groups[pary[p0].group];
+									for (gg = 0; gg < g.length; gg++)
+										if ((pn & g[gg].possibles)
+											&& g[gg].row != pary[p0].row)
+											break;
+									// we have a winner
+									if (gg == g.length)
+										for (p1 = 0; p1 < pary.length; p1++)
+											if (pary[p0].group!=pary[p1].group)
+												pary[p1].removePossibles(pn);
+								}
+						}
+				}
+				// solve for the column
+				for (c = 0; c < matrix[0].length; c++) {
+					pary.length = 0;
+					for (r = 0; r < matrix.length; r++)
+						if (!matrix[r][c].hasSolution())
+							pary.push(matrix[r][c]);
+					if (pary.length > 2)
+						for (n = 0; n < matrix.length; n++) {
+							pn = 1 << n;
+							for (p0 = 0; p0 < pary.length; p0++)
+								if (pn & pary[p0].possibles) {
+									g = groups[pary[p0].group];
+									for (gg = 0; gg < g.length; gg++)
+										if ((pn & g[gg].possibles)
+											&& g[gg].col != pary[p0].col)
+											break;
+									// we have a winner
+									if (gg == g.length)
+										for (p1 = 0; p1 < pary.length; p1++)
+											if (pary[p0].group!=pary[p1].group)
+												pary[p1].removePossibles(pn);
+								}
+						}
+				}
+			}
+			// if a certain number appears in a row/column only in one
+			// group, then it must exist on that row/column in that
+			// group and can be eliminated from the rest of the
+			// group
+			function solveBoxLineReduction(matrix, groups) {
+				var r, c, n, p0, pn, g, gg, p1;
+				var pary = new Array();
+				// solve for the row
+				for (r = 0; r < matrix.length; r++) {
+					pary.length = 0;
+					for (c = 0; c < matrix[r].length; c++)
+						if (!matrix[r][c].hasSolution())
+							pary.push(matrix[r][c]);
+					if (pary.length > 2)
+						for (n = 0; n < matrix.length; n++) {
+							pn = (1 << n);
+							for (p0 = 0; p0 < pary.length; p0++)
+								if (pn & pary[p0].possibles) {
+									for (p1 = 0; p1 < pary.length; p1++)
+										if (pary[p0].group != pary[p1].group
+											&& (pn & pary[p1].possibles)) break;
+									// we have a winner
+									if (p1 == pary.length) {
+										g = groups[pary[p0].group];
+										for (gg = 0; gg < g.length; gg++)
+											if ((pn & g[gg].possibles)
+												&& g[gg].row != pary[p0].row)
+												g[gg].removePossibles(pn);
+									}
+								}
+						}
+				}
+				// solve for the column
+				for (c = 0; c < matrix[0].length; c++) {
+					pary.length = 0;
+					for (r = 0; r < matrix.length; r++)
+						if (!matrix[r][c].hasSolution())
+							pary.push(matrix[r][c]);
+					if (pary.length > 2)
+						for (n = 0; n < matrix.length; n++) {
+							pn = 1 << n;
+							for (p0 = 0; p0 < pary.length; p0++)
+								if (pn & pary[p0].possibles) {
+									for (p1 = 0; p1 < pary.length; p1++)
+										if (pary[p0].group != pary[p1].group
+											&& (pn & pary[p1].possibles)) break;
+									// we have a winner
+									if (p1 == pary.length) {
+										g = groups[pary[p0].group];
+										for (gg = 0; gg < g.length; gg++)
+											if ((pn & g[gg].possibles)
+												&& g[gg].col != pary[p0].col)
+												g[gg].removePossibles(pn);
+									}
+								}
+						}
+				}
+			}
+			function solveXWing(matrix, groups) {
+				var r0, r1, r2, c0, c1, c2, n, p;
+				var wary0 = new Array();
+				var wary1 = new Array();
+				// solve for the rows
+				for (r0 = 0; r0 < matrix.length - 1; r0++)
+					for (n = 0; n < matrix.length; n++) {
+						p = 1 << n;
+						wary0.length = 0;
+						for (c0 = 0; c0 < matrix[r0].length; c0++)
+							if (p & matrix[r0][c0].possibles)
+								wary0.push(matrix[r0][c0].col);
+						if (wary0.length == 2) {
+							for (r1 = r0 + 1; r1 < matrix.length; r1++) {
+								wary1.length = 0;
+								for (c0 = 0; c0 < matrix[r1].length; c0++)
+									if (p & matrix[r1][c0].possibles)
+										wary1.push(matrix[r1][c0].col);
+								if (wary1.length == 2
+									&& wary0[0] == wary1[0]
+									&& wary0[1] == wary1[1]) break;
+							}
+							if (r1 < matrix.length)
+								for (c0 = 0; c0 < matrix[r0].length; c0++)
+									if (matrix[r0][c0].col == wary0[0] ||
+										matrix[r0][c0].col == wary0[1])
+										for (r2 = 0; r2 < matrix.length; r2++)
+											if (r2 != r1 && r2 != r0)
+												matrix[r2][c0].
+													removePossibles(p); 
+						}
+					}
+				// solve for the columns 
+				for (c0 = 0; c0 < matrix[0].length - 1; c0++)
+					for (n = 0; n < matrix.length; n++) {
+						p = 1 << n;
+						wary0.length = 0;
+						for (r0 = 0; r0 < matrix.length; r0++)
+							if (p & matrix[r0][c0].possibles)
+								wary0.push(matrix[r0][c0].col);
+						if (wary0.length == 2) {
+							for (c1 = c0 + 1; c1 < matrix.length; c1++) {
+								wary1.length = 0;
+								for (r0 = 0; r0 < matrix.length; r0++)
+									if (p & matrix[r0][c1].possibles)
+										wary1.push(matrix[r0][c1].col);
+								if (wary1.length == 2
+									&& wary0[0] == wary1[0]
+									&& wary0[1] == wary1[1]) break;
+							}
+							if (c1 < matrix.length)
+								for (r0 = 0; r0 < matrix.length; r0++)
+									if (matrix[r0][c0].col == wary0[0] ||
+										matrix[r0][c0].col == wary0[1])
+										for (c2=0;c2<matrix[r0].length;c2++)
+											if (c2 != c1 && c2 != c0)
+												matrix[r0][c2].
+													removePossibles(p); 
+						}
+					}
+			}
+			function solveSimpleChains(matrix, groups) {
+				var r0, r1, r2, c0, c1, c2, n, p, node, g, group, lt, t;
+				var chain = new Array();
+				for (n = 0; n < matrix.length; n++) {
+					p = 1 << n;
+					chain.length = 0;
+					for (r0 = 0; r0 < matrix.length; r0++) {
+						for (c0 = 0; c0 < matrix[r].length; c0++) {
+							if (matrix[r0][c0].hasSolution()) continue;
+							if (p & matrix[r0][c0].possibles) {
+								chain.push(matrix[r0][c0]);
+								// row
+								lt = 'row';
+								for (c1 = c0+1; c1 < matrix[c0].length; c1++) {
+									if (matrix[r0][c1].hasSolution()) continue;
+									if (p & matrix[r0][c1].possibles) {
+										chain.push(matrix[r0][c1]);
+									}
+								}
+								if (chain.length == 1) {
+									// column
+								 	lt = 'column';
+									for (r1 = r0+1; r1 < matrix.length; r1++) {
+										if (matrix[r1][c0].hasSolution())
+											continue;
+										if (p & matrix[r1][c0].possibles) {
+											chain.push(matrix[r1][c0]);
+										}
+									}
+								}
+								if (chain.length == 1) {
+									// group
+									lt = 'group';
+									group = groups[matrix[r0][c0].group];
+									for (g = 0; g < group.length; g++) {
+										if (group[g].hasSolution()
+											|| group[g] == matrix[r0][c0])
+											continue;
+										if (p & group[g].possibles) {
+											chain.push(group[g]);
+										}
+									}
+								}
+								if (chain.length == 2) {
+								}
+							}
+						}
+					}
+				}
+
+				// solve for the rows
+				for (r0 = 0; r0 < matrix.length - 1; r0++)
+					for (n = 0; n < matrix.length; n++) {
+						p = 1 << n;
+						wary0.length = 0;
+						for (c0 = 0; c0 < matrix[r0].length; c0++)
+							if (p & matrix[r0][c0].possibles)
+								wary0.push(matrix[r0][c0].col);
+						if (wary0.length == 2) {
+							for (r1 = r0 + 1; r1 < matrix.length; r1++) {
+								wary1.length = 0;
+								for (c0 = 0; c0 < matrix[r1].length; c0++)
+									if (p & matrix[r1][c0].possibles)
+										wary1.push(matrix[r1][c0].col);
+								if (wary1.length == 2
+									&& wary0[0] == wary1[0]
+									&& wary0[1] == wary1[1]) break;
+							}
+							if (r1 < matrix.length)
+								for (c0 = 0; c0 < matrix[r0].length; c0++)
+									if (matrix[r0][c0].col == wary0[0] ||
+										matrix[r0][c0].col == wary0[1])
+										for (r2 = 0; r2 < matrix.length; r2++)
+											if (r2 != r1 && r2 != r0)
+												matrix[r2][c0].
+													removePossibles(p); 
+						}
+					}
+				// solve for the columns 
+				for (c0 = 0; c0 < matrix[0].length - 1; c0++)
+					for (n = 0; n < matrix.length; n++) {
+						p = 1 << n;
+						wary0.length = 0;
+						for (r0 = 0; r0 < matrix.length; r0++)
+							if (p & matrix[r0][c0].possibles)
+								wary0.push(matrix[r0][c0].col);
+						if (wary0.length == 2) {
+							for (c1 = c0 + 1; c1 < matrix.length; c1++) {
+								wary1.length = 0;
+								for (r0 = 0; r0 < matrix.length; r0++)
+									if (p & matrix[r0][c1].possibles)
+										wary1.push(matrix[r0][c1].col);
+								if (wary1.length == 2
+									&& wary0[0] == wary1[0]
+									&& wary0[1] == wary1[1]) break;
+							}
+							if (c1 < matrix.length)
+								for (r0 = 0; r0 < matrix.length; r0++)
+									if (matrix[r0][c0].col == wary0[0] ||
+										matrix[r0][c0].col == wary0[1])
+										for (c2=0;c2<matrix[r0].length;c2++)
+											if (c2 != c1 && c2 != c0)
+												matrix[r0][c2].
+													removePossibles(p); 
+						}
+					}
+			}
+		</script>
+	</head>
+	<body onload="draw()">
+		<select id="example" onchange="draw(this.value)">
+			<option value="g0">Select an example to load</option>
+			<option value="g1">Easiest Sudoku</option>
+			<option value="g2">Gentle</option>
+			<option value="g3">Moderate</option>
+			<option value="g4">Tough</option>
+			<option value="g5">Diabolical</option>
+			<option value="g6">Easy 17 Clue</option>
+			<option value="g7">Hard 17 Clue</option>
+			<option value="g8">Naked Triple/Quad</option>
+			<option value="g9">Naked Quad/Hidden Triple</option>
+			<option value="g10">Pointing Pairs</option>
+			<option value="g11">Line/Box Reduction</option>
+			<option value="g12">X-Wing Example</option>
+			<option value="g13">Simple Col. Type 1</option>
+			<option value="g14">Simple Col. Type 2</option>
+			<option value="g15">Y-Wing (single)</option>
+			<option value="g16">Sword-Fish</option>
+			<option value="g17">Jelly-Fish</option>
+			<option value="g18">Multi-Colouring</option>
+			<option value="g19">Grouped AIC Example</option>
+			<option value="g20">Bowman's Example</option>
+			<option value="g21">Remote Pairs Test 2</option>
+			<option value="g22">Triple Example</option>
+			<option value="g23">Box/Line Example</option>
+			<option value="g24">Unique Rectangle</option>
+			<option value="google">Google Puzzle</option>
+			<option value="alEscargot">Al Escargot</option>
+		</select>
+		<input type="button" value="Solve" onclick="solve()" />
+		<input type="button" value="Export" onclick="exportPuzzle()" />
+		<br />
+		<br />
+		<div id="grid"></div>
+		<pre id="out"></pre>
+	</body>
+</html>
+<!-- vim:set ts=4 sw=4: -->
